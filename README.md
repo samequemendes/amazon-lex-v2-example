@@ -69,6 +69,58 @@ terraform apply -var-file="./variables/hml.tfvars"
 
 ---
 
+
+
+### 🧠 Função Lambda de Fulfillment
+
+Para que o bot execute ações após capturar os slots (data, hora e local), é necessário associar uma função Lambda de **fulfillment**.
+
+Essa função será chamada automaticamente pelo Amazon Lex após o preenchimento de todos os slots definidos no intent `AgendarHorario`.
+
+#### 📌 Requisitos:
+
+- A função Lambda precisa estar criada na AWS antes da publicação do bot.
+- O ARN da função Lambda deve ser passado pela variável `lambda_function_arn` no Terraform.
+- A Lambda precisa conceder permissão ao Lex para invocação, o que já é tratado pelo recurso `aws_lambda_permission`.
+
+---
+
+#### 🧪 Exemplo de Função Lambda
+
+```python
+def lambda_handler(event, context):
+    slots = event['sessionState']['intent']['slots']
+
+    date = slots['date']['value']['interpretedValue']
+    time = slots['time']['value']['interpretedValue']
+    location = slots['location']['value']['interpretedValue']
+
+    # Aqui você pode processar e armazenar os dados, por exemplo, salvar no banco de dados
+
+    return {
+        "sessionState": {
+            "dialogAction": {
+                "type": "Close"
+            },
+            "intent": {
+                "name": "AgendarHorario",
+                "state": "Fulfilled"
+            }
+        },
+        "messages": [
+            {
+                "contentType": "PlainText",
+                "content": f"Agendamento registrado para {date} às {time} em {location}."
+            }
+        ]
+    }
+```
+
+> ⚠️ Lembre-se de adicionar um handler adequado no painel da Lambda (por exemplo: `index.lambda_handler`) e configurar o tempo limite e permissões corretamente.
+
+
+
+
 ## ✅ Próximos passos após provisionamento
 
 1. **Criar manualmente um alias para testes no console do Lex**
@@ -86,3 +138,5 @@ terraform apply -var-file="./variables/hml.tfvars"
 
 4. **Integração futura**
    - O bot pode ser conectado com canais como Amazon Connect, Telegram, etc
+
+
