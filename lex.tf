@@ -142,17 +142,17 @@ resource "aws_lexv2models_slot" "location" {
 ############################
 # PUBLICAÇÃO (sem alias)
 ############################
-resource "aws_lexv2models_bot_version" "v1" {
-  bot_id = aws_lexv2models_bot.bot.id
+# resource "aws_lexv2models_bot_version" "v1" {
+#   bot_id = aws_lexv2models_bot.bot.id
 
-  locale_specification = {
-    "pt_BR" = {
-      source_bot_version = "DRAFT"
-    }
-  }
+#   locale_specification = {
+#     "pt_BR" = {
+#       source_bot_version = "DRAFT"
+#     }
+#   }
 
-  description = "Versão 1 publicada via Terraform"
-}
+#   description = "Versão 1 publicada via Terraform"
+# }
 
 ############################
 # PERMISSÃO PARA INVOCAR LAMBDA
